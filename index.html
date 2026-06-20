@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>A Little Something For You</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+  /* ============================================================
+     EDIT THESE — your names
+     ============================================================ */
+  :root{
+    --friend-name: "Poorvitha";   /* ← change this */
+    --your-name:   "The Dark Knight";       /* ← change this */
+
+    --pink:    #FFD7E4;
+    --pink2:   #FFC1D6;
+    --coral:   #FF6F91;
+    --gold:    #FFC857;
+    --plum:    #4A2545;
+    --cream:   #FFF8F3;
+    --red:     #E8475C;
+  }
+
+  *,*::before,*::after{ margin:0; padding:0; box-sizing:border-box; }
+
+  html,body{
+    height:100%;
+    background: var(--pink);
+    font-family:'Quicksand', sans-serif;
+    color: var(--plum);
+    overflow:hidden;
+  }
+
+  .deck{
+    position:relative;
+    height:100vh;
+    height:100dvh;
+    width:100%;
+    overflow:hidden;
+  }
+
+  /* ── SLIDES ──────────────────────────────────────────── */
+  .slide{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:2rem 1.25rem;
+    opacity:0;
+    visibility:hidden;
+    transform: translateX(40px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    background: linear-gradient(160deg, var(--pink) 0%, var(--pink2) 100%);
+  }
+  .slide.active{
+    opacity:1;
+    visibility:visible;
+    transform: translateX(0);
+  }
+
+  .card{
+    position:relative;
+    width:100%;
+    max-width:480px;
+    background:var(--cream);
+    border-radius:18px;
+    padding:3rem 1.75rem 2.5rem;
+    text-align:center;
+    box-shadow:0 20px 50px rgba(74,37,69,0.18);
+  }
+
+  /* scalloped top & bottom edge */
+  .card::before, .card::after{
+    content:"";
+    position:absolute;
+    left:0; right:0;
+    height:16px;
+    background: radial-gradient(circle at 12px 14px, transparent 11px, var(--cream) 11.5px) 0 0/24px 24px repeat-x;
+  }
+  .card::before{ top:-15px; }
+  .card::after{ bottom:-15px; transform: rotate(180deg); }
+
+  .deco-heart{
+    position:absolute;
+    font-size:1.4rem;
+    opacity:0.55;
+    animation: floatHeart 4.5s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes floatHeart{
+    0%,100%{ transform: translateY(0) rotate(0deg); }
+    50%{ transform: translateY(-14px) rotate(8deg); }
+  }
+
+  .eyebrow{
+    font-size:0.72rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--coral);
+    font-weight:700;
+    margin-bottom:0.6rem;
+  }
+
+  h1.title, h2.title{
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size:clamp(2rem, 7vw, 2.8rem);
+    color:var(--red);
+    line-height:1.15;
+    margin-bottom:0.6rem;
+  }
+
+  p.body-text{
+    font-size:1rem;
+    line-height:1.6;
+    color:var(--plum);
+    margin-bottom:1.6rem;
+  }
+
+  /* ── BUTTONS ─────────────────────────────────────────── */
+  .btn{
+    display:inline-block;
+    font-family:'Quicksand',sans-serif;
+    font-weight:700;
+    font-size:0.95rem;
+    color:#fff;
+    background:var(--coral);
+    border:none;
+    border-radius:999px;
+    padding:0.8rem 1.6rem;
+    margin:0.35rem;
+    cursor:pointer;
+    touch-action: manipulation;
+    min-height:44px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 6px 16px rgba(255,111,145,0.35);
+  }
+  .btn:hover{ transform: translateY(-2px) scale(1.03); }
+  .btn:active{ transform: translateY(0) scale(0.98); }
+  .btn.btn-gold{ background:var(--gold); color:var(--plum); box-shadow:0 6px 16px rgba(255,200,87,0.4); }
+  .btn.btn-ghost{ background:transparent; color:var(--coral); border:2px solid var(--coral); box-shadow:none; }
+
+  #noBtn{
+    position:relative;
+    transition: top 0.25s ease, left 0.25s ease, transform 0.15s ease;
+  }
+
+  .btn-row{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    margin-top:0.5rem;
+  }
+
+  /* ── GIFT BOX (cover) ───────────────────────────────── */
+  .gift-wrap{ margin: 1rem auto 1.75rem; width:170px; height:150px; position:relative; }
+  .gift-lid{
+    position:absolute; top:18px; left:-8px; width:186px; height:34px;
+    background:var(--coral); border-radius:8px;
+    transform-origin: 6% 100%;
+    transition: transform 0.55s cubic-bezier(.4,0,.2,1), opacity 0.4s ease;
+    z-index:3;
+  }
+  .gift-lid::after{
+    content:""; position:absolute; left:50%; top:-14px; transform:translateX(-50%);
+    width:22px; height:22px; background:var(--gold); border-radius:50%;
+  }
+  .gift-ribbon{
+    position:absolute; left:50%; top:18px; bottom:0; width:16px; transform:translateX(-50%);
+    background:var(--gold); z-index:2;
+  }
+  .gift-body{
+    position:absolute; top:48px; left:5px; width:160px; height:100px;
+    background:var(--red); border-radius:6px; z-index:1;
+    transition: transform 0.4s ease;
+  }
+  .gift-wrap.opened .gift-lid{ transform: translateY(-55px) rotate(-65deg); opacity:0; }
+  .gift-wrap.opened .gift-body{ transform: scale(0.92); }
+  .gift-wrap{ cursor:pointer; }
+  .tap-hint{
+    font-size:0.78rem; color:var(--coral); letter-spacing:0.05em;
+    animation: pulseHint 1.6s ease-in-out infinite;
+  }
+  @keyframes pulseHint{ 0%,100%{opacity:0.55;} 50%{opacity:1;} }
+
+  /* ── GALLERY ─────────────────────────────────────────── */
+  .gallery-grid{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:1rem;
+    margin-top:1.2rem;
+  }
+  .gallery-grid.cols-3{ grid-template-columns: repeat(3, 1fr); }
+  .polaroid{
+    background:#fff;
+    padding:0.4rem 0.4rem 1.6rem;
+    box-shadow:0 6px 16px rgba(74,37,69,0.18);
+    transform:rotate(var(--tilt, 0deg));
+  }
+  .polaroid img{ width:100%; aspect-ratio:1/1; object-fit:cover; display:block; border-radius:2px; }
+  .polaroid .cap{ font-family:'Caveat',cursive; font-size:0.85rem; text-align:center; margin-top:0.45rem; color:var(--plum); }
+
+  /* ── HEART PHOTO COLLAGE (reveal slide) ─────────────── */
+  .heart-cluster{
+    position:relative;
+    width:100%;
+    height:230px;
+    margin: 0.5rem 0 1.5rem;
+  }
+  .heart-photo{
+    position:absolute;
+    object-fit:cover;
+    clip-path: url(#heartClip);
+    box-shadow:0 6px 14px rgba(74,37,69,0.25);
+  }
+
+  /* ── LETTER PAGE ─────────────────────────────────────── */
+  .slide.letter-slide{
+    background: linear-gradient(160deg, var(--gold) 0%, var(--coral) 100%);
+  }
+  .letter-card{
+    max-width:520px;
+    max-height:82vh;
+    overflow-y:auto;
+    -webkit-overflow-scrolling: touch;
+    text-align:left;
+    background: var(--cream);
+    padding:2.4rem 1.9rem;
+  }
+  .letter-card p.body-text{ text-align:left; }
+  .letter-text{
+    font-family:'Caveat', cursive;
+    font-size:1.3rem;
+    line-height:1.65;
+    color:var(--plum);
+    white-space:pre-line;
+  }
+
+  /* ── NAV ─────────────────────────────────────────────── */
+  .nav-arrow{
+    position:fixed;
+    top:50%;
+    transform:translateY(-50%);
+    background:rgba(255,255,255,0.6);
+    border:none;
+    width:44px; height:44px;
+    border-radius:50%;
+    font-size:1.2rem;
+    color:var(--plum);
+    cursor:pointer;
+    touch-action: manipulation;
+    z-index:20;
+    display:flex; align-items:center; justify-content:center;
+    transition: background 0.2s;
+  }
+  .nav-arrow:hover{ background:rgba(255,255,255,0.9); }
+  #prevArrow{ left:14px; }
+  #nextArrow{ right:14px; }
+  .nav-arrow.hidden{ display:none; }
+
+  .dots{
+    position:fixed;
+    bottom:16px; left:50%;
+    transform:translateX(-50%);
+    display:flex; gap:6px;
+    z-index:20;
+  }
+  .dot{
+    width:7px; height:7px; border-radius:50%;
+    background:rgba(74,37,69,0.25);
+    transition: background 0.25s;
+  }
+  .dot.active{ background:var(--red); }
+
+  /* ── MUSIC TOGGLE ────────────────────────────────────── */
+  #musicToggle{
+    position:fixed;
+    top:14px; right:14px;
+    z-index:30;
+    width:42px; height:42px;
+    border-radius:50%;
+    border:none;
+    background:rgba(255,255,255,0.75);
+    font-size:1.1rem;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 12px rgba(74,37,69,0.2);
+  }
+  #musicToggle.playing{ animation: musicPulse 1.4s ease-in-out infinite; }
+  @keyframes musicPulse{ 0%,100%{ box-shadow:0 4px 12px rgba(74,37,69,0.2); } 50%{ box-shadow:0 4px 18px rgba(255,111,145,0.55); } }
+
+  /* ── CONFETTI CANVAS ─────────────────────────────────── */
+  #confettiCanvas{
+    position:fixed; inset:0; pointer-events:none; z-index:15;
+  }
+
+  @media (max-width:380px){
+    .gallery-grid.cols-3{ grid-template-columns: repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- SVG heart clip-path definition (used by .heart-photo) -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <clipPath id="heartClip" clipPathUnits="objectBoundingBox">
+      <path d="M0.5,0.95 C0.5,0.95 0.05,0.6 0.05,0.32 C0.05,0.12 0.2,0.02 0.36,0.02 C0.46,0.02 0.5,0.09 0.5,0.16 C0.5,0.09 0.54,0.02 0.64,0.02 C0.8,0.02 0.95,0.12 0.95,0.32 C0.95,0.6 0.5,0.95 0.5,0.95 Z"/>
+    </clipPath>
+  </defs>
+</svg>
+
+<canvas id="confettiCanvas"></canvas>
+
+<!-- ============================================================
+     MUSIC — add your own file named song.mp3 in the same
+     folder as this HTML file before uploading to GitHub.
+     ============================================================ -->
+<audio id="bgMusic" loop preload="auto">
+  <source src="song.mp3" type="audio/mpeg">
+</audio>
+<button id="musicToggle" onclick="toggleMusic()" aria-label="Toggle music">🔇</button>
+
+<button class="nav-arrow hidden" id="prevArrow" onclick="prevSlide()">‹</button>
+<button class="nav-arrow hidden" id="nextArrow" onclick="nextSlide()">›</button>
+<div class="dots" id="dots"></div>
+
+<div class="deck">
+
+  <!-- ════════════ SLIDE 0 — COVER ════════════ -->
+  <section class="slide active" data-index="0">
+    <div class="card">
+      <span class="deco-heart" style="top:8%; left:8%;">💗</span>
+      <span class="deco-heart" style="top:10%; right:10%; animation-delay:1s;">✨</span>
+      <span class="deco-heart" style="bottom:10%; left:12%; animation-delay:2s;">💕</span>
+
+      <p class="eyebrow">Hey there</p>
+      <h1 class="title">I made something<br>just for you...</h1>
+
+      <div class="gift-wrap" id="giftWrap" onclick="openGift()">
+        <div class="gift-lid"></div>
+        <div class="gift-ribbon"></div>
+        <div class="gift-body"></div>
+      </div>
+
+      <p class="tap-hint">tap the gift to open ✦</p>
+    </div>
+  </section>
+
+  <!-- ════════════ SLIDE 1 — TEASE ════════════ -->
+  <section class="slide" data-index="1">
+    <div class="card">
+      <h2 class="title">Ready for a little<br>surprise? 👀</h2>
+      <p class="body-text">No backing out now.</p>
+      <div class="btn-row">
+        <button class="btn" onclick="nextSlide()">Yes 💗</button>
+        <button class="btn btn-gold" onclick="nextSlide()">Of course</button>
+        <button class="btn btn-ghost" id="noBtn" onmouseenter="dodge(this)" ontouchstart="dodge(this); event.preventDefault();">No</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ SLIDE 2 — BUILD UP ════════════ -->
+  <section class="slide" data-index="2">
+    <div class="card">
+      <h2 class="title">Okay good.<br>But first...</h2>
+      <p class="body-text">Do you know what today actually is? 🤔</p>
+      <button class="btn" onclick="nextSlide()">Continue</button>
+    </div>
+  </section>
+
+  <!-- ════════════ SLIDE 3 — WHO ════════════ -->
+  <section class="slide" data-index="3">
+    <div class="card">
+      <p class="eyebrow">Wait...</p>
+      <h2 class="title">Isn't today someone<br>very special's birthday? 🎂</h2>
+      <button class="btn btn-gold" onclick="revealBirthday()">Who? 🎁</button>
+    </div>
+  </section>
+
+  <!-- ════════════ SLIDE 4 — REVEAL ════════════ -->
+  <section class="slide" data-index="4">
+    <div class="card">
+      <h2 class="title">YOU! 🎉</h2>
+      <div class="heart-cluster">
+        <!-- ★ Replace each src below with your real photo link -->
+        <img class="heart-photo" style="width:130px;height:130px;top:0;left:30%;" src="https://placehold.co/300x300/FF6F91/fff?text=1">
+        <img class="heart-photo" style="width:95px;height:95px;top:60px;left:6%;transform:rotate(-8deg);" src="https://placehold.co/300x300/FFC857/4A2545?text=2">
+        <img class="heart-photo" style="width:95px;height:95px;top:60px;right:6%;transform:rotate(8deg);" src="https://placehold.co/300x300/E8475C/fff?text=3">
+        <img class="heart-photo" style="width:75px;height:75px;top:150px;left:22%;transform:rotate(-6deg);" src="https://placehold.co/300x300/FFD7E4/4A2545?text=4">
+        <img class="heart-photo" style="width:75px;height:75px;top:150px;right:22%;transform:rotate(6deg);" src="https://placehold.co/300x300/FF6F91/fff?text=5">
+      </div>
+      <p class="body-text">Happy Birthday, <strong><span id="nameSlot4"></span></strong> 🎈<br>
+      Today's all about you — and the best, most genuine person I know.</p>
+      <button class="btn" onclick="nextSlide()">See more 📸</button>
+    </div>
+  </section>
+
+  <!-- ════════════ SLIDE 5 — GALLERY PAGE 1 ════════════ -->
+  <section class="slide" data-index="5">
+    <div class="card">
+      <p class="eyebrow">Memory lane</p>
+      <h2 class="title">A few of my favourites</h2>
+      <div class="gallery-grid cols-3">
+        <!-- ★ duplicate a .polaroid block to add more photos -->
+        <div class="polaroid" style="--tilt:-3deg;">
+          <img src="https://placehold.co/300x300/FFD7E4/4A2545?text=Pic+1">
+          <p class="cap">caption here ✦</p>
+        </div>
+        <div class="polaroid" style="--tilt:2deg;">
+          <img src="https://placehold.co/300x300/FFC857/4A2545?text=Pic+2">
+          <p class="cap">caption here ✦</p>
+        </div>
+        <div class="polaroid" style="--tilt:-1deg;">
+          <img src="https://placehold.co/300x300/FF6F91/fff?text=Pic+3">
+          <p class="cap">caption here ✦</p>
+        </div>
+      </div>
+      <button class="btn" style="margin-top:1.6rem;" onclick="nextSlide()">More →</button>
+    </div>
+  </section>
+
+  <!-- ════════════ SLIDE 6 — GALLERY PAGE 2 ════════════ -->
+  <section class="slide" data-index="6">
+    <div class="card">
+      <p class="eyebrow">Still going</p>
+      <h2 class="title">A few more</h2>
+      <div class="gallery-grid cols-3">
+        <div class="polaroid" style="--tilt:2deg;">
+          <img src="https://placehold.co/300x300/E8475C/fff?text=Pic+4">
+          <p class="cap">caption here ✦</p>
+        </div>
+        <div class="polaroid" style="--tilt:-2deg;">
+          <img src="https://placehold.co/300x300/FFD7E4/4A2545?text=Pic+5">
+          <p class="cap">caption here ✦</p>
+        </div>
+        <div class="polaroid" style="--tilt:1deg;">
+          <img src="https://placehold.co/300x300/FFC857/4A2545?text=Pic+6">
+          <p class="cap">caption here ✦</p>
+        </div>
+      </div>
+      <!-- ★ COPY THIS WHOLE SLIDE BLOCK AND PASTE IT BEFORE THE LETTER SLIDE
+           TO ADD MORE PHOTO PAGES. Remember to update data-index on every
+           slide after it, and the slide count in the JS SLIDE_COUNT var. -->
+      <button class="btn" style="margin-top:1.6rem;" onclick="nextSlide()">One more thing →</button>
+    </div>
+  </section>
+
+  <!-- ════════════ SLIDE 7 — LETTER / POEM ════════════ -->
+  <section class="slide letter-slide" data-index="7">
+    <div class="card letter-card">
+      <p class="eyebrow">A little letter</p>
+      <h2 class="title">For you 💛</h2>
+      <!-- ★ Replace this with your own letter or poem -->
+      <p class="letter-text">Dear [Poorvi],
+
+There are people who walk into your life
+and somehow make everything louder, warmer, better.
+You're one of those people.
+
+I still think about the Batman logo you made me
+out of pistachio shells — hours of patience,
+just to see me smile on my birthday.
+That wasn't just a gift. That was you, completely.
+
+So today, I wanted to make you something too —
+not with shells, but with everything I know about you:
+your laugh, your weird humour, the way you show up.
+
+Happy Birthday.
+Thank you for being exactly who you are.</p>
+    </div>
+  </section>
+
+  <!-- ════════════ SLIDE 8 — CLOSING ════════════ -->
+  <section class="slide" data-index="8">
+    <div class="card">
+      <span class="deco-heart" style="top:10%; left:10%;">🎉</span>
+      <span class="deco-heart" style="top:12%; right:10%; animation-delay:1.2s;">💛</span>
+      <h2 class="title">Happy Birthday<br><span id="nameSlot8"></span> 🎂</h2>
+      <p class="body-text">Here's to another year of being absolutely unforgettable.</p>
+      <p class="body-text" style="font-family:'Caveat',cursive; font-size:1.3rem;">— Your friend, <span id="yourNameSlot"></span></p>
+      <button class="btn btn-ghost" onclick="goTo(0)">Replay ↺</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  /* ── Fill in names from the CSS variables above ───────── */
+  const friendName = getComputedStyle(document.documentElement).getPropertyValue('--friend-name').replace(/"/g,'').trim();
+  const yourName    = getComputedStyle(document.documentElement).getPropertyValue('--your-name').replace(/"/g,'').trim();
+  document.getElementById('nameSlot4').textContent  = friendName;
+  document.getElementById('nameSlot8').textContent  = friendName;
+  document.getElementById('yourNameSlot').textContent = yourName;
+  document.querySelector('.letter-text').textContent =
+    document.querySelector('.letter-text').textContent.replace('[Friend\'s Name]', friendName);
+
+  /* ── Slide navigation ──────────────────────────────────── */
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const SLIDE_COUNT = slides.length;
+  let current = 0;
+
+  const dotsWrap = document.getElementById('dots');
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.addEventListener('click', () => goTo(i));
+    dotsWrap.appendChild(d);
+  });
+  const dotEls = Array.from(dotsWrap.children);
+
+  function updateUI(){
+    slides.forEach((s, i) => s.classList.toggle('active', i === current));
+    dotEls.forEach((d, i) => d.classList.toggle('active', i === current));
+
+    const prevArrow = document.getElementById('prevArrow');
+    const nextArrow = document.getElementById('nextArrow');
+    prevArrow.classList.toggle('hidden', current === 0);
+    nextArrow.classList.toggle('hidden', current === SLIDE_COUNT - 1 || current === 0);
+    dotsWrap.style.visibility = current === 0 ? 'hidden' : 'visible';
+  }
+
+  function goTo(n){
+    current = Math.max(0, Math.min(SLIDE_COUNT - 1, n));
+    updateUI();
+  }
+  function nextSlide(){ goTo(current + 1); }
+  function prevSlide(){ goTo(current - 1); }
+
+  function revealBirthday(){
+    burstConfetti();
+    setTimeout(() => nextSlide(), 350);
+  }
+
+  /* ── Gift box open ─────────────────────────────────────── */
+  function openGift(){
+    const gift = document.getElementById('giftWrap');
+    if (gift.classList.contains('opened')) return;
+    gift.classList.add('opened');
+    startMusic();
+    burstConfetti();
+    setTimeout(() => nextSlide(), 650);
+  }
+
+  /* ── Dodging "No" button ───────────────────────────────── */
+  let dodgeCount = 0;
+  const dodgeTexts = ['No', "You sure?", "Really?", "Last chance...", "Fine 🥺"];
+  function dodge(btn){
+    dodgeCount++;
+    btn.textContent = dodgeTexts[Math.min(dodgeCount, dodgeTexts.length - 1)];
+    const maxX = window.innerWidth - 120;
+    const maxY = window.innerHeight - 80;
+    btn.style.position = 'fixed';
+    btn.style.left = Math.random() * maxX + 'px';
+    btn.style.top  = Math.random() * maxY + 'px';
+  }
+
+  /* ── Music ─────────────────────────────────────────────── */
+  const audio = document.getElementById('bgMusic');
+  const musicBtn = document.getElementById('musicToggle');
+  let musicStarted = false;
+
+  function startMusic(){
+    if (musicStarted) return;
+    musicStarted = true;
+    audio.play().then(() => {
+      musicBtn.textContent = '🔊';
+      musicBtn.classList.add('playing');
+    }).catch(() => { /* autoplay blocked — user can tap the music button */ });
+  }
+
+  function toggleMusic(){
+    if (audio.paused){
+      audio.play().then(() => {
+        musicBtn.textContent = '🔊';
+        musicBtn.classList.add('playing');
+      }).catch(() => {});
+    } else {
+      audio.pause();
+      musicBtn.textContent = '🔇';
+      musicBtn.classList.remove('playing');
+    }
+  }
+
+  /* ── Confetti burst (canvas) ───────────────────────────── */
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  function resizeCanvas(){ canvas.width = innerWidth; canvas.height = innerHeight; }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  let particles = [];
+  const confettiColors = ['#FF6F91', '#FFC857', '#E8475C', '#FFD7E4', '#fff'];
+
+  function burstConfetti(){
+    for (let i = 0; i < 70; i++){
+      particles.push({
+        x: innerWidth / 2 + (Math.random() - 0.5) * 80,
+        y: innerHeight / 2,
+        vx: (Math.random() - 0.5) * 9,
+        vy: Math.random() * -9 - 3,
+        size: Math.random() * 6 + 4,
+        color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
+        rot: Math.random() * 360,
+        vr: (Math.random() - 0.5) * 12,
+        life: 0
+      });
+    }
+  }
+
+  function animateConfetti(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.vy += 0.28;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.vr;
+      p.life++;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size * 0.6);
+      ctx.restore();
+    });
+    particles = particles.filter(p => p.y < innerHeight + 40 && p.life < 260);
+    requestAnimationFrame(animateConfetti);
+  }
+  animateConfetti();
+
+  /* ── Init ──────────────────────────────────────────────── */
+  updateUI();
+
+  /* ── Keyboard support ──────────────────────────────────── */
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') nextSlide();
+    if (e.key === 'ArrowLeft') prevSlide();
+  });
+</script>
+</body>
+</html>
